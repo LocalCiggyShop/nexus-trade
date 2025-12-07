@@ -6,7 +6,7 @@
 
 > Multi-profile • Real-time DOM • Equity Curve • Live P&L • Trade Markers • Persistent Data
 
-<a href="https://LocalCiggyShop.github.io/nexus-edge-demo" target="_blank">
+<a href="https://nexus-edge-taupe.vercel.app/" target="_blank">
   <img src="https://img.shields.io/badge/Live%20Demo-10b981?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" />
 </a>
 <img src="https://img.shields.io/github/stars/LocalCiggyShop/nexus-edge?style=for-the-badge&color=10b981" alt="Stars" />
@@ -43,6 +43,5 @@
 
 ```bash
 git clone https://github.com/LocalCiggyShop/nexus-edge.git
-cd nexus-edge
 npm install    # or pnpm install / yarn
-npm run dev        # starts at http://localhost:5173
+npm run dev    # starts at http://localhost:5173
