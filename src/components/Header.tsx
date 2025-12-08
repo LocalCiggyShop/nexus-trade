@@ -46,18 +46,18 @@ export default function Header() {
         <div className="flex items-center gap-3 sm:gap-4">
           <img 
             src="/logo.png" 
-            alt="NEXUS EDGE"
+            alt="NEXUS TRADE"
             className="h-8 w-8 sm:h-9 sm:w-9 rounded-xl object-contain drop-shadow-md"
           />
           <div className="hidden sm:block">
             <h1 className="text-xl sm:text-2xl font-bold tracking-tighter leading-none">
-              NEXUS <span className="text-muted-foreground font-normal">EDGE</span>
+              NEXUS <span className="text-muted-foreground font-normal">TRADE</span>
             </h1>
             <p className="text-xs text-muted-foreground -mt-0.5">Professional Trading Simulator</p>
           </div>
           <div className="sm:hidden">
             <h1 className="text-lg font-bold tracking-tight">
-              NEXUS<span className="text-muted-foreground font-normal">EDGE</span>
+              NEXUS<span className="text-muted-foreground font-normal">TRADE</span>
             </h1>
           </div>
         </div>

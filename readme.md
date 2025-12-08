@@ -1,16 +1,16 @@
 <div align="center">
 
-# NEXUS EDGE
+# NEXUS TRADE
 
 **The most realistic, fast, and beautiful paper trading simulator ever built.**
 
 > Multi-profile • Real-time DOM • Equity Curve • Live P&L • Trade Markers • Persistent Data
 
-<a href="https://nexus-edge-taupe.vercel.app/" target="_blank">
+<a href="https://nexus-trade-project.vercel.app/" target="_blank">
   <img src="https://img.shields.io/badge/Live%20Demo-10b981?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" />
 </a>
-<img src="https://img.shields.io/github/stars/LocalCiggyShop/nexus-edge?style=for-the-badge&color=10b981" alt="Stars" />
-<img src="https://img.shields.io/github/forks/LocalCiggyShop/nexus-edge?style=for-the-badge&color=0891b2" alt="Forks" />
+<img src="https://img.shields.io/github/stars/LocalCiggyShop/nexus-trade?style=for-the-badge&color=10b981" alt="Stars" />
+<img src="https://img.shields.io/github/forks/LocalCiggyShop/nexus-trade?style=for-the-badge&color=0891b2" alt="Forks" />
 
 </div>
 
@@ -42,6 +42,6 @@
 ### Quick Start
 
 ```bash
-git clone https://github.com/LocalCiggyShop/nexus-edge.git
+git clone https://github.com/LocalCiggyShop/nexus-trade.git
 npm install    # or pnpm install / yarn
 npm run dev    # starts at http://localhost:5173
