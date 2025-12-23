@@ -13,12 +13,15 @@ import {
   SeriesMarker,
   createSeriesMarkers,
 } from 'lightweight-charts'
+import { useShallow } from 'zustand/shallow'
 
 export default function Chart() {
   const containerRef = useRef<HTMLDivElement>(null)
   const chartRef = useRef<IChartApi | null>(null)
+  
+  // ⭐️ USE REF for all series to ensure stability and prevent race conditions
   const candlestickSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null)
-  const [volumeSeries, setVolumeSeries] = useState<ISeriesApi<'Area'> | null>(null)
+  const volumeSeriesRef = useRef<ISeriesApi<'Area'> | null>(null) 
   const positionLineRef = useRef<IPriceLine | null>(null)
 
   const [showSettings, setShowSettings] = useState(false)
@@ -31,12 +34,22 @@ export default function Chart() {
 
   const timeframe = useMarketStore(s => s.timeframe)
 
+  // Selectors
   const profile = useActiveProfile()
-  const { symbol, priceData } = useMarketStore()
+  // ⭐️ Destructure symbol and priceData from a single store call for optimization
+  const { symbol, priceData } = useMarketStore(
+    useShallow(s => ({
+        symbol: s.symbol,
+        priceData: s.priceData
+    }))
+);
 
+  // Profile data
   const positions = profile.positions
   const chartDataMap = profile.chartData
   const tradeMarkersFull = profile.tradeMarkers
+  
+  // Memoized/Derived values
   const rawTicks = chartDataMap[symbol] || []
   const tradeMarkers = useMemo(() => tradeMarkersFull?.[symbol] ?? [], [tradeMarkersFull, symbol])
   const currentPrice = priceData[symbol] ?? 500
@@ -89,12 +102,15 @@ export default function Chart() {
     return Array.from(map.values()).slice(-500)
   }, [rawTicks, currentPrice, tfSeconds])
 
-  const isDark = document.documentElement.classList.contains('dark')
+  // Get the current theme status. Needs to be stable.
+  const isDark = useMemo(() => document.documentElement.classList.contains('dark'), [])
 
+  // Effect for saving settings to localStorage
   useEffect(() => {
     localStorage.setItem('chart.showTradeMarkers', String(showTradeMarkers))
   }, [showTradeMarkers])
 
+  // EFFECT 1: Chart Initialization and Config Updates (symbol, timeframe, grid)
   useEffect(() => {
     if (!containerRef.current) return
 
@@ -123,7 +139,8 @@ export default function Chart() {
       topColor: 'rgba(14,165,233,0.1)', bottomColor: 'rgba(14,165,233,0)',
       lineColor: 'transparent', priceScaleId: 'volume',
     })
-    setVolumeSeries(vol as ISeriesApi<'Area'>)
+    // ⭐️ Use useRef for volume series
+    volumeSeriesRef.current = vol as ISeriesApi<'Area'>
     chart.priceScale('volume').applyOptions({ scaleMargins: { top: 0.85, bottom: 0 } })
 
     const handleResize = () => chart.applyOptions({
@@ -136,8 +153,10 @@ export default function Chart() {
       window.removeEventListener('resize', handleResize)
       chart.remove()
     }
-  }, [isDark, tfSeconds, showGrid, symbol])
+  // ⭐️ Dependency array is stable
+  }, [isDark, tfSeconds, showGrid, symbol]) 
 
+  // Effect to fit content when data or autofit changes (small helper)
   useEffect(() => {
     if (!chartRef.current || candles.length === 0) return
     if (autoFit) {
@@ -145,9 +164,14 @@ export default function Chart() {
     }
   }, [autoFit, candles])
 
+  // EFFECT 2: Data Update, Markers, and Price Line
   useEffect(() => {
     const series = candlestickSeriesRef.current
-    if (!series || candles.length === 0) return
+    const volSeries = volumeSeriesRef.current // ⭐️ Use useRef
+    const chart = chartRef.current
+
+    // ⭐️ CRITICAL GUARD: Ensure all series and chart references are available
+    if (!series || !volSeries || candles.length === 0 || !chart) return
 
     series.setData(candles)
 
@@ -160,8 +184,6 @@ export default function Chart() {
       text: m.type === 'entry' ? m.side === 'LONG' ? 'LONG' : 'SHORT' : 'EXIT',
       size: 1,
     }))
-
-    // createSeriesMarkers(series, markers)
 
     if (showTradeMarkers && tradeMarkers.length > 0) {
       createSeriesMarkers(series, markers)
@@ -186,15 +208,17 @@ export default function Chart() {
       positionLineRef.current = null
     }
 
-    volumeSeries?.setData(candles.map(c => ({
+    // Volume series data
+    volSeries.setData(candles.map(c => ({
       time: c.time,
       value: c.volume || 0,
       color: c.close >= c.open ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)',
     })))
 
-    if (autoFit) chartRef.current?.timeScale().fitContent()
-    chartRef.current?.timeScale().scrollToRealTime()
-  }, [candles, tradeMarkers, position, autoFit, volumeSeries])
+    if (autoFit) chart.timeScale().fitContent()
+    chart.timeScale().scrollToRealTime()
+    // ⭐️ Dependency array is stable and includes all used external variables
+  }, [candles, tradeMarkers, position, autoFit, showTradeMarkers]) 
 
   return (
     <div className="relative w-full h-full bg-card rounded-lg overflow-hidden">

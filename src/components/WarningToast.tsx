@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMarketStore } from '@/store/marketStore'
 import { X, AlertTriangle, Info } from 'lucide-react'
 
